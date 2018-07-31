@@ -1,0 +1,279 @@
+---
+title: "Bank Marketting_bivariate Analysis"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Importing the dataset
+```{r}
+bank <- read.csv("bank.csv",header = TRUE, sep = ",")
+```
+
+
+```{r}
+summary(bank)
+```
+
+```{r}
+str(bank)
+```
+Here we have 4521 observations and 17 variables in the data set. 
+
+Let us check for NA's and blank spaces
+```{r}
+colSums(is.na(bank))
+colSums(bank =="")
+```
+There is no missing values in the data set
+
+1. age Vs y
+Minimum of age is 19 maximum is 87 and mean age is 41.17
+Now visualize the data
+```{r}
+library(ggplot2)
+ggplot(bank, aes(x = age, fill = y)) +
+geom_density(alpha=0.5, aes(fill=factor(y))) + labs(title="age Vs y") +
+scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme_grey()
+```
+Most of the customers are from 30 to 40
+
+2.job Vs y
+```{r}
+table(bank$job, bank$y)
+prop.table(table(bank$job, bank$y))
+```
+
+Now visualize it
+```{r}
+ggplot(bank, aes(x = job, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'job', y = 'percent', fill = 'y', title = 'job Vs y')
+```
+Highest number of customers having management job (21.43%) and next is blue-collar job (20.92%)
+
+3.marital Vs y
+```{r}
+table(bank$marital, bank$y)
+prop.table(table(bank$marital, bank$y))
+```
+
+
+Now visualize it
+```{r}
+ggplot(bank, aes(x = marital, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'marital', y = 'percent', fill = 'y', title = 'marital Vs y')
+```
+62% customers are married.
+
+4.education Vs y
+```{r}
+table(bank$education, bank$y)
+prop.table(table(bank$education, bank$y))
+```
+visualize it
+```{r}
+ggplot(bank, aes(x = education, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'education', y = 'percent', fill = 'y', title = 'education Vs y')
+```
+Half of the customers are having secondary education.
+5. default Vs y
+```{r}
+table(bank$default, bank$y)
+prop.table(table(bank$default, bank$y))
+```
+Visualize it
+```{r}
+ggplot(bank, aes(x = default, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'default', y = 'percent', fill = 'y', title = 'default Vs y')
+```
+98% customers has no credit in default
+6.balance(Average yearly balance in Euros)
+
+minimum balance is -3313, maximum is 71188 and mean baance is 1423.
+visualize it
+```{r}
+ggplot(bank, aes(x = balance, fill = y)) +
+geom_density(alpha=0.5, aes(fill=factor(y))) + labs(title="balance Vs y") +
+scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme_grey()
+```
+
+7.housing Vs y
+
+```{r}
+table(bank$housing, bank$y)
+prop.table(table(bank$housing, bank$y))
+```
+visualize it
+```{r}
+ggplot(bank, aes(x = housing, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'housing', y = 'percent', fill = 'y', title = 'housing Vs y')
+```
+56.6% customers has housing loan.
+
+8.loan Vs y
+
+```{r}
+table(bank$loan, bank$y)
+prop.table(table(bank$loan, bank$y))
+```
+visualize it
+```{r}
+ggplot(bank, aes(x = loan, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'loan', y = 'percent', fill = 'y', title = 'loan Vs y')
+```
+84.7% has personal loan.
+
+9.contact Vs y
+
+```{r}
+table(bank$contact, bank$y)
+prop.table(table(bank$contact, bank$y))
+```
+visualize it
+```{r}
+ggplot(bank, aes(x = contact, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'contact', y = 'percent', fill = 'y', title = 'contact Vs y')
+```
+64% customers are contacted by cellular.
+
+10.day(Day of the month last time customer was contacted)
+
+visualize it
+```{r}
+ggplot(bank, aes(x = day, fill = y)) +
+geom_density(alpha=0.5, aes(fill=factor(y))) + labs(title="day Vs y") +
+scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme_grey()
+```
+Most customers contacted on 15 to 20 
+
+11. month(month of the year last time customer was contacted)
+
+```{r}
+table(bank$month, bank$y)
+prop.table(table(bank$month, bank$y))
+```
+
+```{r}
+ggplot(bank, aes(x = month, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'month', y = 'percent', fill = 'y', title = 'month Vs y')
+```
+May has more customers contacted
+
+12.duration(last contact duration in seconds)
+
+visualize it
+```{r}
+ggplot(bank, aes(x = duration, fill = y)) +
+geom_density(alpha=0.5, aes(fill=factor(y))) + labs(title="duration Vs y") +
+scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme_grey()
+```
+
+Mean duration for last contact is 264 seconds
+
+13.campaign(Number of contacts performed during the marketing campaign and for this customer)
+
+Visualize
+```{r}
+ggplot(bank, aes(x = campaign, fill = y)) +
+geom_density(alpha=0.5, aes(fill=factor(y))) + labs(title="campaign Vs y") +
+scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme_grey()
+```
+Mean number of contacts performed a cuctomer is 2 times
+
+
+14.pdays(Number of days that passed by after the client was last contacted from a previous campaign)
+Visualize
+```{r}
+ggplot(bank, aes(x = pdays, fill = y)) +
+geom_density(alpha=0.5, aes(fill=factor(y))) + labs(title="pdays Vs y") +
+scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme_grey()
+```
+Mean number of days that passed by after the client has contacted from previous campaign is 39.
+
+15.previous(Number of contacts performed before this campaign and for this client)
+Visualize
+```{r}
+ggplot(bank, aes(x = previous, fill = y)) +
+geom_density(alpha=0.5, aes(fill=factor(y))) + labs(title="previous Vs y") +
+scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + theme_grey()
+```
+Maximum number of contacts performed before this campaign is 25
+
+16.poutcome(Outcome of the previous marketing campaign)
+```{r}
+table(bank$poutcome, bank$y)
+prop.table(table(bank$poutcome, bank$y))
+```
+Visualize
+```{r}
+ggplot(bank, aes(x = poutcome, fill = y)) +
+  geom_bar(aes(y = prop.table(..count..) * 100), position='dodge') +
+  geom_text(aes(y = prop.table(..count..) * 100 + 0.5, 
+                  label = paste0(round(prop.table(..count..) * 100, 2), '%')), 
+              stat = 'count', 
+              position = position_dodge(.9), 
+              size = 3) + 
+    labs(x = 'poutcome', y = 'percent', fill = 'y', title = 'poutcome Vs y')
+```
+Here 10% are failured, 2% success and 81% unknown.
+
+
+
+
+
