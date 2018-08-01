@@ -1,0 +1,195 @@
+---
+title: "Bank Marketing_Naive Bayes"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+Importing the dataset
+```{r}
+bank <- read.csv("bank.csv",header = TRUE, sep = ",")
+```
+
+
+```{r}
+summary(bank)
+```
+
+
+```{r}
+str(bank)
+```
+
+The new bank dataset after removing age, job, previous, default, pdays, balance
+
+```{r}
+bank <- bank[c(3:4, 7:13, 16:17)]
+str(bank)
+bank$campaign <- as.factor(bank$campaign)
+```
+Check for normality of duration
+```{r}
+hist(bank$duration)
+plot(density(bank$duration))
+shapiro.test(bank$duration)
+qqnorm(bank$duration);qqline(bank$duration, col = 2)
+```
+
+Check for normality of day
+```{r}
+hist(bank$day)
+plot(density(bank$day))
+shapiro.test(bank$day)
+qqnorm(bank$day);qqline(bank$day, col = 2)
+```
+
+```{r}
+for(i in 1 : nrow(bank))
+{
+  if (bank$duration[i] < 240)
+  {
+    bank$duration[i] = '00 to 04 min'
+  }
+  else if (bank$duration[i] < 480 & bank$duration[i] > 240)
+  {
+    bank$duration[i] = '04 to 08 min'
+  } 
+  else if (bank$duration[i] < 720 & bank$duration[i] > 480)
+  {
+    bank$duration[i] = '08 to 12 min'
+  } 
+  else if (bank$duration[i] < 960 & bank$duration[i] > 720)
+  {
+    bank$duration[i] = '12 to 16 min'
+  }
+  else if (bank$duration[i] < 1200 & bank$duration[i] > 960)
+  {
+    bank$duration[i] = '16 to 20 min'
+  }
+  else if (bank$duration[i] < 1440 & bank$duration[i] > 1200)
+  {
+    bank$duration[i] = '20 to 24 min'
+  }
+  else if (bank$duration[i] < 1680 & bank$duration[i] > 1440)
+  {
+    bank$duration[i] = '24 to 28 min'
+  }
+  else if (bank$duration[i] < 1920 & bank$duration[i] > 1680)
+  {
+    bank$duration[i] = '28 to 32 min'
+  }
+  else if (bank$duration[i] < 2160 & bank$duration[i] > 1920)
+  {
+    bank$duration[i] = '32 to 36 min'
+  }
+  else if (bank$duration[i] > 2160)
+  {
+    bank$duration[i] = ' >  36  min '
+  }
+}
+```
+ 
+```{r}
+bank$duration <- as.factor(bank$duration)
+table(bank$duration)
+```
+ 
+```{r}
+for(i in 1 : nrow(bank))
+{
+  if (bank$day[i] < 7)
+  {
+    bank$day[i] = '1st week'
+  }
+  else if (bank$day[i] < 14 & bank$day[i] > 7)
+  {
+    bank$day[i] = '2nd week'
+  } 
+  else if (bank$day[i] < 21 & bank$day[i] > 14)
+  {
+    bank$day[i] = '3rd week'
+  } 
+  else if (bank$day[i] < 28 & bank$day[i] > 21)
+  {
+    bank$day[i] = '4th week'
+  }
+  
+  else if (bank$day[i] > 28)
+  {
+    bank$day[i] = '5th week'
+  }
+}
+```
+ 
+```{r}
+bank$day <- as.factor(bank$day)
+table(bank$day)
+```
+ 
+ Splitting the dataset into training set and test set
+```{r}
+# install.packages("caTools")
+library(caTools)
+set.seed(123)
+split = sample.split(bank$y, SplitRatio = 2/3)
+training_set = subset(bank, split == TRUE)
+test_set = subset(bank, split == FALSE)
+```
+
+Fitting classifier to the training test
+```{r}
+# install.packages("e1071")
+library(e1071)
+classifier = naiveBayes(y ~ ., data = training_set)
+print(classifier)
+```
+
+Predicting the test results
+```{r}
+y_pred = predict(classifier, newdata = test_set)
+y_pred
+```
+Confusion matrix
+```{r}
+cm = table(test_set$y, y_pred)
+cm
+```
+Accuracy is the ratio of correctly predicted observation to the total observations
+```{r}
+accuracy <- sum(diag(cm))/sum(cm) 
+accuracy
+```
+ So we got 89% accuracy
+Precision is the ratio of correctly predicted positive observations to the total predicted positive observations.
+```{r}
+precision <- cm[2,2]/(sum(cm[,2]))
+precision
+```
+We got 56% precision
+Recall is the ratio of correctly predicted positive observations to the all observations in actual class
+```{r}
+recall <- cm[2,2]/(sum(cm[2,]))
+recall
+```
+We got 25% recall
+
+```{r}
+F1 <- 2*(recall * precision) / (recall + precision)
+F1
+```
+
+ 34% is the F1 score
+
+
+
+
+
